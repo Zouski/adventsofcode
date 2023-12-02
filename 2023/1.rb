@@ -34,7 +34,7 @@ digits = %w[one two three four five six seven eight nine 1 2 3 4 5 6 7 8 9]
 example.each do |line|
   lindexes = []
   rindexes = []
-  lindexes = digits.each do |d|
+  digits.each do |d|
     lindexes.push line.index d
     rindexes.push line.rindex d
   end
