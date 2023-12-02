@@ -14,12 +14,16 @@ def overcolour(number, colour)
 end
 
 sum = 0
+sum2 = 0
+
 example.each_with_index do |game, i|
   valid = true
+  local = {'red' => 0, 'green' => 0, 'blue' => 0}
   line = game.split(':').last.strip
   line.split(';').each do |round|
     round.split(',').each do |draw|
       number, colour = draw.split ' '
+      local[colour] = number.to_i if number.to_i > local[colour]
       if overcolour(number.to_i, colour)
         valid = false
         # pp "game #{i+1} invalid because #{colour} #{number}"
@@ -27,21 +31,8 @@ example.each_with_index do |game, i|
     end
   end
   sum += i + 1 if valid
-end
-
-pp sum
-
-sum2 = 0
-example.each do |game|
-  local = {'red' => 0, 'green' => 0, 'blue' => 0}
-  line = game.split(':').last.strip
-  line.split(';').each do |round|
-    round.split(',').each do |draw|
-      number, colour = draw.split ' '
-      local[colour] = number.to_i if number.to_i > local[colour]
-    end
-  end
   sum2 += local.values.inject(:*)
 end
 
+pp sum
 pp sum2
