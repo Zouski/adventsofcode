@@ -2,7 +2,7 @@ data = File.open('4.txt').readlines.map(&:chomp)
 
 cards = data.map do |card|
   card = card.split(':').last
-  card = card.split('|').map {|x| x.split(' ').map(&:to_i)}
+  card.split('|').map { |x| x.split(' ').map(&:to_i) }
 end
 
 sum = 0

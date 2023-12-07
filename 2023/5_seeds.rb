@@ -1,23 +1,11 @@
-input = File.open('5e.txt').readlines.map(&:chomp)
-
-class Range
-  def split(pivot)
-    [(self.begin..pivot), (pivot + 1..self.end)]
-  end
-end
-
-def sort_ranges(ranges)
-  ranges.sort_by(&:begin)
-end
+input = File.open('5.txt').readlines.map(&:chomp)
 
 # pp input
 
 # Each line within a map contains three numbers: the destination range start, the source range start, and the range length.
 
-
 seeds = input.first.split(':').last.split.map(&:to_i)
 input = input.drop 3
-
 
 conversions = [{}]
 num = 0
@@ -52,55 +40,73 @@ end
 
 pp locations.min
 
+t_start = Time.now
 seed_ranges = []
 until seeds.empty?
   pair = seeds.pop 2
   seed_ranges.push((pair.first..pair.last + pair.first - 1))
 end
 
-pp seed_ranges = sort_ranges(seed_ranges)
 sorted_conversions = conversions.map { |hash| hash.sort_by { |range| range.first.first }.to_h }
-pp sorted_conversions
+# pp sorted_conversions
 
-# Identify overlaps
-# remove overlaps to translate
-# translate overlaps into translated
-# passthrough anything left into translated
-# lets assume that per the example data, conversions have no gaps between first.begin and last.end
-#
+# make list of points and their types, go through that
+# the list should have:
+#   the number along the line, the index
+#   the type, :seed or :con
+#   and if :con, the offset
 
-
-
-def translate_layer(seed_ranges, conversions)
-  translated_ranges = []
-  
-  if conversions.first.first.begin > seed_ranges.first.begin
-    split = seed_ranges.first.split(conversions.first.first.begin)
-    translated_ranges.push split.first
-    seed_ranges = split.last + seed_ranges.drop(1)
+Point = Struct.new(:index, :type, :offset) do
+  def initialize(index, type, offset = nil)
+    super(index, type, offset)
   end
-
-  if conversions.last.first.end > seed_ranges.last.begin
-    split = seed_ranges.first.split(conversions.first.first.begin)
-    translated_ranges.push split.first
-    seed_ranges = split.last + seed_ranges.drop(1)
-  end
-
-  # under and over hang dealt with, now to convert over block
-  conversions.each do |c_range, offset|
-    pp c_range
-    seed_ranges.each do |seed_range|
-      break if seed_range.begin > c_range.end
-
-      if seed_range.end <= c_range.end
-        translated_ranges.push(seed_range.begin + offset..seed_range.end + offset)
-      end
-    end
-  end
-
-  pp 'end'
 end
 
-translate_layer(seed_ranges, sorted_conversions.first)
+def sort_points(seed_ranges, conversions)
+  points = []
 
+  seed_ranges.each do |range|
+    points.push Point.new(range.begin, :seed)
+    points.push Point.new(range.end, :seed)
+  end
+
+  conversions.each do |conversion|
+    range = conversion.first
+    points.push Point.new(range.begin, :con, conversion.last)
+    points.push Point.new(range.end, :con, conversion.last)
+  end
+
+  points.sort_by(&:index)
+end
+
+
+7.times do |layer|
+  points = sort_points(seed_ranges, sorted_conversions[layer])
+  # pp points
+
+  in_seed_range = false
+  in_con_range = nil
+  translated_seeds = []
+  last_point = -1
+
+  points.each do |point|
+    translated_seeds.push(last_point - in_con_range.to_i..point.index - in_con_range.to_i) if in_seed_range
+    if point.type == :seed
+      in_seed_range = !in_seed_range
+    else
+      in_con_range = in_con_range.nil? ? point.offset : nil
+    end
+
+    last_point = point.index
+  end
+
+  # pp translated_seeds
+  seed_ranges = translated_seeds
+end
+
+t_end = Time.now
+# runs in about 0.0051 seconds
+
+pp t_end - t_start
+pp seed_ranges.first.begin
 
