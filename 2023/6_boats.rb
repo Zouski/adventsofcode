@@ -16,7 +16,7 @@ pp dists
 
 start = Time.now
 
-def quadratic_formula(b, c)
+def quadratic_formula(b, c) #without a
   (-b + Math.sqrt(b**2 - (c * -4))) / -2
 end
 
@@ -24,13 +24,11 @@ powers = []
 times.each_with_index do |time, i|
   dist = dists[i]
 
-
   quad = quadratic_formula(time, -dist)
   quad += 1 if (quad % 1).zero?
   equation = (((time / 2) - quad.ceil).ceil * 2) + (1 - (time % 2))
   powers.push equation.to_i
 end
-
 
 
 time = input.first[10..].gsub(' ', '').to_i
