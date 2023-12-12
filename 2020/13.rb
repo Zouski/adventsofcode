@@ -1,4 +1,4 @@
-filename = '13e.txt'
+filename = '13.txt'
 input = File.open(filename).readlines.map(&:chomp)
 
 arrive = input[0].to_i
@@ -18,46 +18,65 @@ pp min_index[0] * busses[min_index[1]]
 
 
 busses = input[1].split(',')
-busses = "17,x,13,19".split(',')
 pp busses
 
+product = 1
+busses.each do |bus|
+  product *= bus.to_i if bus.to_i.positive?
+end
 
-increment = busses.first.to_i
-t0 = increment
-
-busses[1..-1].each_with_index do |bus, i|
-  next if bus == 'x'
-
-  time = t0
-  bus = bus.to_i
-  while time % bus != bus - 1
-    time += increment
+nis = []
+busses.each do |bus|
+  if bus.to_i.positive?
+    nis.push  product / bus.to_i
+  else
+    nis.push 0
   end
-  pp time
+end
 
-  t0 = time
+pp nis
 
-  # now find next
-  time += increment
-  while time % bus != bus - 1
-    time += increment
+def inverse_mod(num, mod)
+  num = num % mod
+  res = nil
+  (0..mod).each do |step|
+    k = (step * mod) + 1
+    return k / num if k % num == 0
   end
+  res
+end
 
-  increment = time - t0
-  pp time
+while false
+  pp "num"
+  num = gets.to_i
+  pp "mod"
+  mod = gets.to_i
+  pp pp inverse_mod(num, mod)
 end
 
 
-a = 7
-b = 13
+zis = []
+busses.each_with_index do |bus, i|
+  if nis[i].positive?
+    zis.push inverse_mod(nis[i], bus.to_i)
+  else
+    zis.push 0
+  end
+end
 
-input = File.open(filename).readlines.map(&:chomp)
-pp input
+
+pp zis
 
 
-busses = input.last.split(',')
-pp busses
+sums = []
+busses.each_with_index do |bus, i|
+  if bus.to_i > 0
+    sums.push ((bus.to_i - i) % bus.to_i) * nis[i] * zis[i]
+  else
+    sums.push 0
+  end
+end
 
-a = 7
-b = 13
+pp sums
+pp sums.sum % product
 
