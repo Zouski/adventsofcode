@@ -7,6 +7,7 @@ directions = input.first
 Node = Struct.new(:name, :left, :right)
 
 
+
 nodes = input.drop(2).map do |node|
   node = node.split
   Node.new(node.first, node[2][1..3], node[3][0..2])

@@ -13,15 +13,15 @@ def symbol_around?(i, x, length, number)
 
   @data[start..fin].each_with_index do |line, mid|
     sample = line[x..x + length]
-    unless sample.gsub(/[\d.]/, '').empty?
-      if sample.index '*'
-        @gears[start + mid] ||= {}
-        @gears[start + mid][x + sample.index('*')] ||= []
-        @gears[start + mid][x + sample.index('*')].push number
-      end
+    next if sample.gsub(/[\d.]/, '').empty?
 
-      return true
+    if sample.index '*'
+      @gears[start + mid] ||= {}
+      @gears[start + mid][x + sample.index('*')] ||= []
+      @gears[start + mid][x + sample.index('*')].push number
     end
+
+    return true
   end
 
   false
