@@ -10,7 +10,7 @@ from collections import Counter
 
 debug = False
 
-parent = sizes = distances = []
+parent = sizes = distances = points = []
 
 def read_input(filename="inputE.txt"):
     """Read and parse the input file."""
@@ -59,7 +59,7 @@ def union(a, b):
 
 def part1(data):
     """Solve part 1."""
-    global parent, size, distances
+    global parent, size, distances, points
     
     lines = data.split('\n')
 
@@ -84,16 +84,9 @@ def part1(data):
 
 def part2(data):
     """Solve part 2."""
-    global parent, size, distances
+    global parent, size, distances, points
 
     lines = data.split('\n')
-
-    points = []
-    for i, line in enumerate(lines):
-        point = tuple(map(int, line.split(','))) + (i,)
-        points.append(point)
-
-    # print(points)
     
     a = b = 0
     for _, a, b in distances:
