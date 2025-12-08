@@ -26,9 +26,7 @@ func putsy(a ...interface{}) (int, error) {
 
 func main() {
 	data, _ := os.ReadFile(file)
-
 	content := string(data)
-
 	puts(content)
 
 	regex, _ := regexp.Compile(`mul\((\d{1,3}),(\d{1,3})\)`)

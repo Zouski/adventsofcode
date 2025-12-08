@@ -1,0 +1,11 @@
+# Place your Advent of Code session cookie here
+# 
+# To get your session cookie:
+# 1. Log in to https://adventofcode.com
+# 2. Open browser DevTools (F12)
+# 3. Go to Application/Storage -> Cookies (or Network tab -> select any request -> Cookies)
+# 4. Copy the value of the 'session' cookie
+# 5. Rename this file to .aoc_session and paste your cookie value below
+#
+# Example format (yours will be much longer):
+# 53616c7465645f5f...your_actual_session_cookie_here...
