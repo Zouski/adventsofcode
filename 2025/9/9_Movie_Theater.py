@@ -24,7 +24,7 @@ def part1(data):
     coords = [tuple(map(int, line.split(','))) for line in lines]
     
     largest = 0
-    for a, b in list(combinations(coords, 2)):
+    for a, b in combinations(coords, 2):
         ax, ay = a
         bx, by = b
         area = (abs(ax - bx) + 1) * (abs(ay - by) + 1)
@@ -62,9 +62,7 @@ def is_valid_rectangle(rect, hedges, vedges, hedge_py_values, vedge_px_values, l
 
     for i in range(hedge_start, hedge_end):
         px1, px2, py = hedges[i]
-        if px1 < x2 <= px2:
-            return False
-        if px1 <= x1 < px2:
+        if px1 < x2 <= px2 or px1 <= x1 < px2:
             return False
         
     # For vertical edges, find those with px in range (x1, x2)
@@ -74,9 +72,7 @@ def is_valid_rectangle(rect, hedges, vedges, hedge_py_values, vedge_px_values, l
         
     for i in range(vedge_start, vedge_end):
         py1, py2, px = vedges[i]
-        if py1 < y2 <= py2:
-            return False
-        if py1 <= y1 < py2:
+        if py1 < y2 <= py2 or py1 <= y1 < py2:
             return False
     
     return True
@@ -115,6 +111,7 @@ def part2(coords):
     vedge_px_values = [v[2] for v in vedges]
     
     largest = 0
+    best_coords = None
     for a, b in combinations(coords, 2):
         x1, y1 = a
         x2, y2 = b
@@ -129,8 +126,9 @@ def part2(coords):
         
         if is_valid_rectangle(rect, hedges, vedges, hedge_py_values, vedge_px_values, longest_hedge, longest_vedge):
             largest = area
+            best_coords = (a, b)
     
-    return largest
+    return largest, best_coords
 
 if __name__ == "__main__":
     # Read input
@@ -144,7 +142,9 @@ if __name__ == "__main__":
 
     # Solve part 2
     t1s = time.perf_counter()
-    answer2 = part2(coords)
+    answer2, best_coords = part2(coords)
     t1e = time.perf_counter()
     print(f"Part 2: {answer2} (time: {(t1e - t1s) * 1000:.3f} ms)")
+    # if best_coords:
+    #     print(f"  Best rectangle coords: {best_coords[0]} to {best_coords[1]}")
     
