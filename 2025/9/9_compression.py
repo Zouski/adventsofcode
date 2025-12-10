@@ -195,13 +195,9 @@ def check_area_against_largest(x1_real, y1_real, x2_real, y2_real, largest):
 
 def part2(coords):
     """Solve part 2 using compression and prefix sum approach."""
-    # Extract all unique X and Y values, sorted
-    x_base = sorted(set(x for x, y in coords))
-    y_base = sorted(set(y for x, y in coords))
-    
-    # Add in-between values (x and x+1 for each x)
-    x_values = sorted(set(val for x in x_base for val in [x, x + 1]))
-    y_values = sorted(set(val for y in y_base for val in [y, y + 1]))
+    # Extract all unique X and Y values, sorted - NO in-between values
+    x_values = sorted(set(x for x, y in coords))
+    y_values = sorted(set(y for x, y in coords))
     
     # Create mapping from actual coordinates to indices
     x_to_idx = {x: i for i, x in enumerate(x_values)}
@@ -245,36 +241,47 @@ def part2(coords):
         if found:
             break
     
+    # Set corners back to 1
+    for x, y in compressed_coords:
+        matrix[y][x] = 1
+    
     # Create prefix sum matrix
     prefix = build_prefix_sum(matrix, width, height)
     
-    # Find largest rectangle with prefix sum of 0 (all interior cells)
+    # Find largest rectangle checking only inner cells
     largest_p2 = 0
     best_coords_p2 = None
-    best_compressed_coords = None
     
     for (x1_c, y1_c), (x2_c, y2_c) in combinations(compressed_coords, 2):
         # Normalize rectangle
         x_min, x_max = min(x1_c, x2_c), max(x1_c, x2_c)
         y_min, y_max = min(y1_c, y2_c), max(y1_c, y2_c)
         
-        # Calculate area using original coordinates FIRST (cheap check)
+        # Skip if rectangle is too small (no interior)
+        if x_max <= x_min + 1 or y_max <= y_min + 1:
+            continue
+        
+        # Calculate area using original coordinates
         x1_real = x_values[x_min]
         y1_real = y_values[y_min]
         x2_real = x_values[x_max]
         y2_real = y_values[y_max]
         
-        area, is_larger = check_area_against_largest(x1_real, y1_real, x2_real, y2_real, largest_p2)
+        area = (abs(x2_real - x1_real) + 1) * (abs(y2_real - y1_real) + 1)
         
-        # Skip expensive prefix sum check if area isn't better
-        if not is_larger:
+        # Skip if area is not better
+        if area <= largest_p2:
             continue
         
-        # Query prefix sum for rectangle
-        if check_prefix_sum(prefix, x_min, x_max, y_min, y_max):
+        # Check only the inner rectangle (x_min+1 to x_max-1, y_min+1 to y_max-1)
+        # All cells in inner must be 1 (interior), so prefix sum should be full area
+        
+        rect_sum = (prefix[y_max][x_max] - prefix[y_min+1][x_max] - 
+                    prefix[y_max][x_min+1] + prefix[y_min+1][x_min+1])
+        
+        if rect_sum == 0:
             largest_p2 = area
             best_coords_p2 = ((x1_real, y1_real), (x2_real, y2_real))
-            best_compressed_coords = (x_min, x_max, y_min, y_max)
     
     return largest_p2, best_coords_p2
 
