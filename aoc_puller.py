@@ -219,6 +219,8 @@ def fetch_day(day, session):
 
 def main():
     """Main function to pull daily AOC problem."""
+    global AOC_YEAR, BASE_URL
+    
     # Determine which day(s) to fetch
     if len(sys.argv) > 1:
         arg = sys.argv[1]
@@ -228,6 +230,32 @@ def main():
             if year < 2015 or year > datetime.now().year:
                 print(f"Invalid year: {year}. AOC started in 2015.")
                 sys.exit(1)
+            
+            # Check if a specific day is provided (year day)
+            if len(sys.argv) > 2:
+                day = int(sys.argv[2])
+                print(f"Fetching Advent of Code {year} - Day {day}")
+                print("=" * 50)
+                
+                # Get session cookie
+                session = get_session_cookie()
+                
+                # Temporarily change AOC_YEAR
+                AOC_YEAR = year
+                BASE_URL = f"https://adventofcode.com/{AOC_YEAR}"
+                
+                # Fetch single day
+                solution_file, success = fetch_day(day, session)
+                
+                if success:
+                    print("\n" + "=" * 50)
+                    print("✓ Setup complete!")
+                    print(f"\nStart coding: {solution_file}")
+                else:
+                    print("\n" + "=" * 50)
+                    print("✗ Failed to fetch day")
+                return
+            
             print(f"Fetching all 25 days for Advent of Code {year}")
             print("=" * 50)
             
@@ -235,7 +263,6 @@ def main():
             session = get_session_cookie()
             
             # Temporarily change AOC_YEAR
-            global AOC_YEAR, BASE_URL
             AOC_YEAR = year
             BASE_URL = f"https://adventofcode.com/{AOC_YEAR}"
             
@@ -266,7 +293,7 @@ def main():
         if now.month == 12 and now.day <= 25:
             day = now.day
         else:
-            print("Please specify a day or year: python aoc_puller.py <day|year>")
+            print("Please specify a day or year: python aoc_puller.py <day|year> [day]")
             sys.exit(1)
     
     print(f"Fetching Advent of Code {AOC_YEAR} - Day {day}")
